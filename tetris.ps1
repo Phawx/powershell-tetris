@@ -4,10 +4,16 @@ function Draw-Game {
         $tetromino
     )
 
-    Clear-Host
-    $tetromino | % { $board[($_.Y + $yOffset),($_.X + $xOffset)] = 1 }
-    $board | % { ($_ | % { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
+    cls
+    $updatedBoard = $board.Clone()
+    $tetromino | % {
+        $y = $_.Y + $yOffset
+        $x = $_.X + $xOffset
+        $updatedBoard[$y][$x] = 1
+    }
+    $updatedBoard | % { ($_ | % { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
 }
+
 
 $boardWidth = 10
 $boardHeight = 20
