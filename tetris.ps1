@@ -1,18 +1,19 @@
-function Draw-Game {
+function Show-Game {
     param(
         $board,
         $tetromino
     )
 
-    cls
+    Clear-Host
     $updatedBoard = $board.Clone()
-    $tetromino | % {
+    $tetromino | ForEach-Object {
         $y = $_.Y + $yOffset
         $x = $_.X + $xOffset
         $updatedBoard[$y][$x] = 1
     }
-    $updatedBoard | % { ($_ | % { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
+    $updatedBoard | ForEach-Object { ($_ | ForEach-Object { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
 }
+
 
 
 $boardWidth = 10
@@ -42,6 +43,6 @@ while ($true) {
     }
 
     $yOffset += 1
-    Draw-Game -board $board -tetromino $tetromino
+    Show-Game -board $board -tetromino $tetromino
     Start-Sleep -Milliseconds 500
 }
