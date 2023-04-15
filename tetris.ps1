@@ -4,15 +4,17 @@ function Show-Game {
         $tetromino
     )
 
-    Clear-Host
-    $updatedBoard = $board.Clone()
-    $tetromino | ForEach-Object {
+    cls
+    $updatedBoard = $board | % { ,@( $_ ) }
+    $tetromino | % {
         $y = $_.Y + $yOffset
         $x = $_.X + $xOffset
         $updatedBoard[$y][$x] = 1
     }
-    $updatedBoard | ForEach-Object { ($_ | ForEach-Object { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
+    $updatedBoard | % { ($_ | % { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
 }
+
+
 
 
 
