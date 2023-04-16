@@ -4,6 +4,22 @@ $boardHeight = 20
 $console = $host.UI.RawUI
 $console.ForegroundColor = 'White'
 
+
+function Rotate-Tetromino {
+    param(
+        $tetromino
+    )
+    
+    $center = $tetromino | Measure-Object -Property X,Y -Average
+    $newTetromino = $tetromino | ForEach-Object {
+        [PSCustomObject]@{
+            X = [int](-($_.Y - $center.Average.Y) + $center.Average.X)
+            Y = [int]($_.X - $center.Average.X + $center.Average.Y)
+        }
+    }
+    return $newTetromino
+}
+
 function Update-Game {
     param(
         $board,
@@ -84,28 +100,45 @@ while ($true) {
     }
 
     switch ($key.VirtualKeyCode) {
-        37 {
+        37 { # Left arrow key
             if (-not (Test-Collision -board $board -tetromino $tetromino -xOffset ($xOffset - 1) -yOffset $yOffset)) {
                 $xOffset -= 1
             }
         }
-        39 {
+        38 { # Up arrow key
+            $rotatedTetromino = Rotate-Tetromino -tetromino $tetromino
+            if (-not (Test-Collision -board $board -tetromino $rotatedTetromino -xOffset $xOffset -yOffset $yOffset)) {
+                $tetromino = $rotatedTetromino
+            }
+        }
+        39 { # Right arrow key
             if (-not (Test-Collision -board $board -tetromino $tetromino -xOffset ($xOffset + 1) -yOffset $yOffset)) {
                 $xOffset += 1
             }
         }
-        40 {
+        40 { # Down arrow key
             if (-not (Test-Collision -board $board -tetromino $tetromino -xOffset $xOffset -yOffset ($yOffset + 1))) {
                 $yOffset += 1
             }
         }
     }
 
-    if (-not (Test-Collision -board $board -tetromino $tetromino -xOffset $xOffset -yOffset ($yOffset + 1))) {
+    if (Test-Collision -board $board -tetromino $tetromino -xOffset $xOffset -yOffset ($yOffset + 1)) {
+        $tetromino | ForEach-Object {
+            $y = $_.Y + $yOffset
+            $x = $_.X + $xOffset
+            $board[$y][$x] = 1
+        }
+        $currentTetrominoIndex = Get-Random -Minimum 0 -Maximum $tetrominoes.Count
+        $tetromino = $tetrominoes[$currentTetrominoIndex]
+        $xOffset = [int]($boardWidth / 2)
+        $yOffset = 0
+    } else {
         $yOffset += 1
     }
 
     Update-Game -board $board -tetromino $tetromino
     Start-Sleep -Milliseconds 500
 }
+
 
