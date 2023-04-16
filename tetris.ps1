@@ -1,3 +1,9 @@
+$boardWidth = 10
+$boardHeight = 20
+
+$console = $host.UI.RawUI
+$console.ForegroundColor = 'White'
+
 function Update-Game {
     param(
         $board,
@@ -9,7 +15,9 @@ function Update-Game {
         $x = $_.X + $xOffset
         $updatedBoard[$y][$x] = 1
     }
-    $updatedBoard | % { ($_ | % { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
+    $consoleOutput = $updatedBoard | % { ($_ | % { if ($_ -eq 1) { "*" } else { " " } }) -join "" }
+    cls
+    $consoleOutput
 }
 
 function Copy-Board {
@@ -45,11 +53,6 @@ function Test-Collision {
     return $false
 }
 
-
-
-
-$boardWidth = 10
-$boardHeight = 20
 $board = New-Object 'System.Collections.Generic.List[Object]'
 for ($i = 0; $i -lt $boardHeight; $i++) {
     $row = ,@(0) * $boardWidth
